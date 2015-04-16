@@ -1,0 +1,109 @@
+.TH FQ_PIE 8 "16 April 2015" "iproute2" "Linux"
+.SH NAME
+FQ_PIE \- Fair Queuing (FQ) Proportional Integral controller-Enhanced (PIE) AQM algorithm
+.SH SYNOPSIS
+.B tc qdisc ... fq_pie
+[
+.B limit
+PACKETS ] [
+.B target
+TIME ] [
+.B tupdate
+TIME ] [
+.B alpha
+int ] [
+.B beta
+int ] [
+.B ecn
+|
+.B noecn
+] [
+.B bytemode
+|
+.B nobytemode
+]
+
+.SH DESCRIPTION
+FQ_PIE (Fair Queuing Proportional Integral controller-Enhanced) is queuing 
+discipline that combines Fair Queuing with the PIE AQM scheme. FQ_PIE uses 
+a stochastic model to classify incoming packets into different flows and is 
+used to provide a fair share of the bandwidth to all the flows using the queue. 
+Each such flow is managed by the PIE queuing discipline. Reordering within a 
+flow is avoided since PIE internally uses a FIFO queue.
+
+.SH PARAMETERS
+.SS limit
+limit on the queue size in packets. Incoming packets are dropped when this limit
+is reached. Default is 1000 packets.
+
+.SS target
+is the expected queue delay. The default target delay is 20ms.
+
+.SS tupdate
+is the frequency at which the system drop probability is calculated. The default is 30ms.
+
+.SS alpha
+.SS beta
+alpha and beta are parameters chosen to control the drop probability. These
+should be in the range between 0 and 32.
+
+.SS ecn | noecn
+is used to mark packets instead of dropping
+.B ecn
+to turn on ecn mode,
+.B noecn
+to turn off ecn mode. By default,
+.B ecn
+is turned off.
+
+.SS bytemode | nobytemode
+is used to scale drop probability proportional to packet size
+.B bytemode
+to turn on bytemode,
+.B nobytemode
+to turn off bytemode. By default,
+.B bytemode
+is turned off.
+
+.SH EXAMPLES
+ # tc qdisc add dev eth0 root fq_pie
+ # tc -s qdisc show
+   qdisc fq_pie 8034: dev eth0 root refcnt 2 limit 200p target 19000us tupdate 29000us alpha 2 beta 20
+   Sent 7443524 bytes 7204 pkt (dropped 900, overlimits 0 requeues 0)
+   backlog 38998b 37p requeues 0
+   prob 0.123384 delay 25000us avg_dq_rate 1464840
+   pkts_in 7241 overlimit 900 dropped 0 maxq 186 ecn_mark 0
+
+ # tc qdisc add dev eth0 root fq_pie limit 100 target 20ms tupdate 30ms ecn
+ # tc -s qdisc show
+   qdisc fq_pie 8036: dev eth0 root refcnt 2 limit 200p target 19000 tupdate 29000 alpha 2 beta 20 ecn
+   Sent 2491922 bytes 2507 pkt (dropped 214, overlimits 0 requeues 0)
+   backlog 33728b 32p requeues 0
+   prob 0.102262 delay 24000us avg_dq_rate 1464840
+   pkts_in 2468 overlimit 214 dropped 0 maxq 192 ecn_mark 71
+
+
+ # tc qdisc add dev eth0 root fq_pie limit 100 target 50ms tupdate 30ms bytemode
+ # tc -s qdisc show
+   qdisc fq_pie 8036: dev eth0 root refcnt 2 limit 200p target 19000 tupdate 29000 alpha 2 beta 20 ecn
+   Sent 2491922 bytes 2507 pkt (dropped 214, overlimits 0 requeues 0)
+   backlog 33728b 32p requeues 0
+   prob 0.102262 delay 24000us avg_dq_rate 1464840
+   pkts_in 2468 overlimit 214 dropped 0 maxq 192 ecn_mark 71
+
+
+.SH SEE ALSO
+.BR tc (8),
+.BR tc-codel (8)
+.BR tc-red (8)
+.BR tc-pie (8)
+
+.SH SOURCES
+ o IETF draft submission is at http://tools.ietf.org/html/draft-pan-tsvwg-pie-00
+ o IEEE  Conference on High Performance Switching and Routing 2013 : "PIE: A
+Lightweight Control Scheme to Address the Bufferbloat Problem"
+
+.SH AUTHORS
+FQ_PIE was implemented by Hironori Okano, also the authors of
+this man page. Please report bugs and corrections to the Linux networking
+development mailing list at <netdev@vger.kernel.org>.
