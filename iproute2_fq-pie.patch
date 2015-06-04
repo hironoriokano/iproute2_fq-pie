@@ -1,3 +1,16 @@
+diff --git a/Makefile b/Makefile
+index 2e91c32..b794f08 100644
+--- a/Makefile
++++ b/Makefile
+@@ -39,7 +39,7 @@ WFLAGS += -Wmissing-declarations -Wold-style-definition -Wformat=2
+ CFLAGS := $(WFLAGS) $(CCOPTS) -I../include $(DEFINES) $(CFLAGS)
+ YACCFLAGS = -d -t -v
+ 
+-SUBDIRS=lib ip tc bridge misc netem genl tipc man
++SUBDIRS=lib ip tc bridge misc netem genl man
+ 
+ LIBNETLINK=../lib/libnetlink.a ../lib/libutil.a
+ LDLIBS += $(LIBNETLINK)
 diff --git a/include/linux/pkt_sched.h b/include/linux/pkt_sched.h
 index 534b847..c157329 100644
 --- a/include/linux/pkt_sched.h
@@ -204,7 +217,7 @@ index 434fe6c..195688e 100644
  .RB "User documentation at " http://lartc.org/ ", but please direct bugreports and patches to: " <netdev@vger.kernel.org>
  
 diff --git a/tc/Makefile b/tc/Makefile
-index f9916c3..8a9b116 100644
+index 96e8493..dcb8171 100644
 --- a/tc/Makefile
 +++ b/tc/Makefile
 @@ -62,6 +62,7 @@ TCMODULES += q_codel.o
@@ -213,8 +226,8 @@ index f9916c3..8a9b116 100644
  TCMODULES += q_pie.o
 +TCMODULES += q_fq_pie.o
  TCMODULES += q_hhf.o
+ TCMODULES += e_bpf.o
  
- ifeq ($(TC_CONFIG_IPSET), y)
 diff --git a/tc/q_fq_pie.c b/tc/q_fq_pie.c
 index e69de29..5ce1473 100644
 --- a/tc/q_fq_pie.c

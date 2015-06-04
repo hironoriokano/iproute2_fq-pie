@@ -1,5 +1,5 @@
 #!/bin/bash
-PATCH_NAME=iproute_fq-pie.patch
+PATCH_NAME=iproute2_fq-pie.patch
 ROOT_PATH=`pwd`
 
 if [ -e /etc/redhat-release ]; then
@@ -7,7 +7,7 @@ if [ -e /etc/redhat-release ]; then
 	yum install bison flex db4-devel libdb-devel -y
 elif [ -e /etc/lsb-release ]; then
 	#Ubuntu14.04 - apt-get
-	apt-get install bison flex libdb5.3 -y
+	apt-get install bison flex libdb6.0 libmnl-dev -y
 fi
 
 if [ ! -e iproute2 ]; then
@@ -16,6 +16,7 @@ if [ ! -e iproute2 ]; then
 fi
 
 cd iproute2
+
 git reset --hard HEAD
 rm man/man8/tc-fq_pie.8
 rm tc/q_fq_pie.c
@@ -30,6 +31,8 @@ cp ../q_fq_pie.c  tc/q_fq_pie.c
 git add -N man/man8/tc-fq_pie.8
 git add -N tc/q_fq_pie.c
 
+sed -i -e "s/tipc //g" Makefile
+
 git status
 #git diff
 echo "making patch"
@@ -37,9 +40,20 @@ echo "git diff > ${ROOT_PATH}/${PATCH_NAME}"
 git diff > ${ROOT_PATH}/${PATCH_NAME}
 
 tc -V
+
+set -e
+trap 'echo "Hiro: make clean failed"' ERR
 make clean
+
+set -e
+trap 'echo "Hiro: make failed"' ERR
 make
+
+set -e
+trap 'echo "Hiro: make install failed"' ERR
 make install
+
+echo "Hiro: make install successed"
 tc -V
 
 # USAGE
