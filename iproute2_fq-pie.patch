@@ -1,21 +1,8 @@
-diff --git a/Makefile b/Makefile
-index 2e91c32..b794f08 100644
---- a/Makefile
-+++ b/Makefile
-@@ -39,7 +39,7 @@ WFLAGS += -Wmissing-declarations -Wold-style-definition -Wformat=2
- CFLAGS := $(WFLAGS) $(CCOPTS) -I../include $(DEFINES) $(CFLAGS)
- YACCFLAGS = -d -t -v
- 
--SUBDIRS=lib ip tc bridge misc netem genl tipc man
-+SUBDIRS=lib ip tc bridge misc netem genl man
- 
- LIBNETLINK=../lib/libnetlink.a ../lib/libutil.a
- LDLIBS += $(LIBNETLINK)
 diff --git a/include/linux/pkt_sched.h b/include/linux/pkt_sched.h
-index 534b847..c157329 100644
+index 8d2530d..ae40147 100644
 --- a/include/linux/pkt_sched.h
 +++ b/include/linux/pkt_sched.h
-@@ -845,4 +845,60 @@ struct tc_pie_xstats {
+@@ -850,4 +850,60 @@ struct tc_pie_xstats {
  	__u32 maxq;             /* maximum queue size */
  	__u32 ecn_mark;         /* packets marked with ecn*/
  };
@@ -77,11 +64,11 @@ index 534b847..c157329 100644
 +};
  #endif
 diff --git a/man/man8/Makefile b/man/man8/Makefile
-index 152747a..384dee1 100644
+index 3df9961..c0115b3 100644
 --- a/man/man8/Makefile
 +++ b/man/man8/Makefile
 @@ -4,7 +4,7 @@ MAN8PAGES = $(TARGETS) ip.8 arpd.8 lnstat.8 routel.8 rtacct.8 rtmon.8 ss.8 \
- 	tc.8 tc-bfifo.8 tc-cbq.8 tc-cbq-details.8 tc-choke.8 tc-codel.8 \
+ 	tc.8 tc-bfifo.8 tc-bpf.8 tc-cbq.8 tc-cbq-details.8 tc-choke.8 tc-codel.8 \
  	tc-drr.8 tc-ematch.8 tc-fq_codel.8 tc-hfsc.8 tc-htb.8 tc-pie.8 \
  	tc-mqprio.8 tc-netem.8 tc-pfifo.8 tc-pfifo_fast.8 tc-prio.8 tc-red.8 \
 -	tc-sfb.8 tc-sfq.8 tc-stab.8 tc-tbf.8 \
@@ -204,10 +191,10 @@ index e69de29..615b825 100644
 +this man page. Please report bugs and corrections to the Linux networking
 +development mailing list at <netdev@vger.kernel.org>.
 diff --git a/man/man8/tc.8 b/man/man8/tc.8
-index 434fe6c..195688e 100644
+index feafa05..e6834ee 100644
 --- a/man/man8/tc.8
 +++ b/man/man8/tc.8
-@@ -575,6 +575,8 @@ was written by Alexey N. Kuznetsov and added in Linux 2.2.
+@@ -576,6 +576,8 @@ was written by Alexey N. Kuznetsov and added in Linux 2.2.
  .BR tc-sfq (8),
  .BR tc-stab (8),
  .BR tc-tbf (8),
@@ -217,10 +204,10 @@ index 434fe6c..195688e 100644
  .RB "User documentation at " http://lartc.org/ ", but please direct bugreports and patches to: " <netdev@vger.kernel.org>
  
 diff --git a/tc/Makefile b/tc/Makefile
-index 96e8493..dcb8171 100644
+index 56acbaa..0e3c42d 100644
 --- a/tc/Makefile
 +++ b/tc/Makefile
-@@ -62,6 +62,7 @@ TCMODULES += q_codel.o
+@@ -63,6 +63,7 @@ TCMODULES += q_codel.o
  TCMODULES += q_fq_codel.o
  TCMODULES += q_fq.o
  TCMODULES += q_pie.o

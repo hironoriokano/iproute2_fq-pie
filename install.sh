@@ -31,7 +31,7 @@ cp ../q_fq_pie.c  tc/q_fq_pie.c
 git add -N man/man8/tc-fq_pie.8
 git add -N tc/q_fq_pie.c
 
-sed -i -e "s/tipc //g" Makefile
+#sed -i -e "s/tipc //g" Makefile
 
 git status
 #git diff
@@ -57,7 +57,7 @@ echo "Hiro: make install successed"
 tc -V
 
 # USAGE
-# tc qdisc show eth0
+# tc qdisc show dev eth0
 # tc qdisc add dev eth0 root fq_pie limit 100 
 # tc qdisc change dev eth0 root fq_pie limit 200 target 10ms
 # tc qdisc del dev eth0 root
