@@ -262,7 +262,11 @@ static int fq_pie_print_xstats(struct qdisc_util *qu, FILE *f,
 			st->qdisc_stats.old_flows_len);
 	}
 	if (st->type == TCA_FQ_PIE_XSTATS_CLASS) {
-		fprintf(f, "  deficit %d", st->class_stats.deficit);
+		fprintf(f, "  deficit %d prob %u delay %u avg_dq_rate %u",
+			st->class_stats.deficit,
+			st->class_stats.prob,
+			st->class_stats.delay,
+			st->class_stats.avg_dq_rate);
 	}
 	return 0;
 }

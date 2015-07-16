@@ -1,8 +1,8 @@
 diff --git a/include/linux/pkt_sched.h b/include/linux/pkt_sched.h
-index 8d2530d..ae40147 100644
+index 8d2530d..d9a4b84 100644
 --- a/include/linux/pkt_sched.h
 +++ b/include/linux/pkt_sched.h
-@@ -850,4 +850,60 @@ struct tc_pie_xstats {
+@@ -850,4 +850,59 @@ struct tc_pie_xstats {
  	__u32 maxq;             /* maximum queue size */
  	__u32 ecn_mark;         /* packets marked with ecn*/
  };
@@ -45,14 +45,13 @@ index 8d2530d..ae40147 100644
 +				 */
 +	__u32 new_flows_len;	/* count of flows in new list */
 +	__u32 old_flows_len;	/* count of flows in old list */
-+
-+	__u32 prob;             /* current probability */
-+	__u32 delay;            /* current delay in ms */
-+	__u32 avg_dq_rate;      /* current average dq_rate in bits/pie_time */
 +};
 +
 +struct tc_fq_pie_cl_stats {
 +	__s32 deficit;
++	__u32 prob;             /* current probability */
++	__u32 delay;            /* current delay in ms */
++	__u32 avg_dq_rate;      /* current average dq_rate in bits/pie_time */
 +};
 +
 +struct tc_fq_pie_xstats {
@@ -216,10 +215,10 @@ index 56acbaa..0e3c42d 100644
  TCMODULES += e_bpf.o
  
 diff --git a/tc/q_fq_pie.c b/tc/q_fq_pie.c
-index e69de29..5ce1473 100644
+index e69de29..5ffbb78 100644
 --- a/tc/q_fq_pie.c
 +++ b/tc/q_fq_pie.c
-@@ -0,0 +1,275 @@
+@@ -0,0 +1,279 @@
 +/*
 + * Fair Queue PIE
 + *
@@ -484,7 +483,11 @@ index e69de29..5ce1473 100644
 +			st->qdisc_stats.old_flows_len);
 +	}
 +	if (st->type == TCA_FQ_PIE_XSTATS_CLASS) {
-+		fprintf(f, "  deficit %d", st->class_stats.deficit);
++		fprintf(f, "  deficit %d prob %u delay %u avg_dq_rate %u",
++			st->class_stats.deficit,
++			st->class_stats.prob,
++			st->class_stats.delay,
++			st->class_stats.avg_dq_rate);
 +	}
 +	return 0;
 +}
