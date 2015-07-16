@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -v
 PATCH_NAME=iproute2_fq-pie.patch
 ROOT_PATH=`pwd`
 
@@ -42,22 +42,39 @@ git diff > ${ROOT_PATH}/${PATCH_NAME}
 tc -V
 
 set -e
-trap 'echo "Hiro: make clean failed"' ERR
+trap 'echo "make clean failed"' ERR
 make clean
 
 set -e
-trap 'echo "Hiro: make failed"' ERR
+trap 'echo "make failed"' ERR
 make
 
 set -e
-trap 'echo "Hiro: make install failed"' ERR
+trap 'echo "make install failed"' ERR
 make install
 
-echo "Hiro: make install successed"
+echo "installed iproute2 successfully"
 tc -V
 
-# USAGE
-# tc qdisc show dev eth0
-# tc qdisc add dev eth0 root fq_pie limit 100 
-# tc qdisc change dev eth0 root fq_pie limit 200 target 10ms
-# tc qdisc del dev eth0 root
+# TEST
+set -e
+trap 'echo "Hiro: tc pie command test error!"; tc qdisc del dev eth0 root' ERR
+tc qdisc add dev eth0 root pie limit 100
+tc qdisc change dev eth0 root pie limit 1200 target 10ms tupdate 40ms alpha 4 beta 15
+tc qdisc del dev eth0 root
+
+set -e
+trap 'echo "Hiro: tc fq_pie command test error!"; tc qdisc del dev eth0 root' ERR
+tc qdisc add dev eth0 root fq_pie flows 800
+tc qdisc show dev eth0
+tc qdisc change dev eth0 root fq_pie limit 300
+tc qdisc change dev eth0 root fq_pie quantum 1000
+tc qdisc change dev eth0 root fq_pie target 30ms
+tc qdisc change dev eth0 root fq_pie tupdate 40ms
+tc qdisc change dev eth0 root fq_pie alpha 6
+tc qdisc change dev eth0 root fq_pie beta 6
+tc qdisc change dev eth0 root fq_pie tupdate 40
+tc qdisc change dev eth0 root fq_pie limit 5000  quantum 1000 target 20ms tupdate 40ms alpha 4 beta 10 ecn
+tc -s qdisc show dev eth0
+tc -s class show dev eth0
+tc qdisc del dev eth0 root
